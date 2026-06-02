@@ -26,6 +26,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -65,7 +66,7 @@ import ni.edu.uam.innovacion.ui.theme.UamWhite
 
 @Composable
 fun InnovacionUamPrototypeScreen() {
-    var selectedTab by remember { mutableStateOf(PrototypeTab.Panel) }
+    var selectedTab by remember { mutableStateOf(MainTab.Panel) }
     var nextUserId by remember { mutableIntStateOf(4) }
 
     val roles = remember {
@@ -115,7 +116,7 @@ fun InnovacionUamPrototypeScreen() {
                 shirt = "M",
                 roles = setOf("administrador"),
                 adminProfile = AdminProfileUi(
-                    position = "Coordinadora de innovacion",
+                    position = "Coordinadora de innovación",
                     accessLevel = "total"
                 )
             )
@@ -146,13 +147,13 @@ fun InnovacionUamPrototypeScreen() {
         ) {
             AppHeader()
             when (selectedTab) {
-                PrototypeTab.Panel -> AdminDashboardScreen(
+                MainTab.Panel -> AdminDashboardScreen(
                     users = users,
                     roles = roles,
                     events = events
                 )
 
-                PrototypeTab.Usuarios -> UsersScreen(
+                MainTab.Usuarios -> UsersScreen(
                     users = users,
                     onCreateUser = { input ->
                         users.add(
@@ -166,7 +167,7 @@ fun InnovacionUamPrototypeScreen() {
                                 shirt = input.shirt
                             )
                         )
-                        events.add(0, "Usuario ${input.name} registrado desde la app")
+                        events.add(0, "Usuario ${input.name} registrado en el sistema")
                     },
                     onChangeStatus = { id, status ->
                         users.updateUser(id) { it.copy(status = status) }
@@ -174,12 +175,12 @@ fun InnovacionUamPrototypeScreen() {
                     }
                 )
 
-                PrototypeTab.Roles -> RolesScreen(
+                MainTab.Roles -> RolesScreen(
                     users = users,
                     roles = roles,
                     onCreateRole = { role ->
                         roles.add(role)
-                        events.add(0, "Rol ${role.name} creado para nuevos flujos")
+                        events.add(0, "Nuevo rol ${role.name} creado")
                     },
                     onAssignRole = { userId, roleName ->
                         val userName = users.firstOrNull { it.id == userId }?.name.orEmpty()
@@ -193,17 +194,17 @@ fun InnovacionUamPrototypeScreen() {
                     }
                 )
 
-                PrototypeTab.Perfiles -> ProfilesScreen(
+                MainTab.Perfiles -> ProfilesScreen(
                     users = users,
                     onCreateStudentProfile = { userId, profile ->
                         users.updateUser(userId) { it.copy(studentProfile = profile) }
                         val userName = users.firstOrNull { it.id == userId }?.name.orEmpty()
-                        events.add(0, "Perfil estudiante completado para $userName")
+                        events.add(0, "Perfil de estudiante completado para $userName")
                     },
                     onCreateAdminProfile = { userId, profile ->
                         users.updateUser(userId) { it.copy(adminProfile = profile) }
                         val userName = users.firstOrNull { it.id == userId }?.name.orEmpty()
-                        events.add(0, "Perfil administrador completado para $userName")
+                        events.add(0, "Perfil administrativo completado para $userName")
                     }
                 )
             }
@@ -221,36 +222,37 @@ private fun AppHeader() {
                     colors = listOf(UamTurquoise, UamTurquoiseSecondary, UamTurquoiseAccent)
                 )
             )
-            .padding(horizontal = 20.dp, vertical = 22.dp)
+            .padding(horizontal = 20.dp, vertical = 24.dp)
     ) {
-        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 Box(
                     modifier = Modifier
-                        .size(48.dp)
-                        .clip(RoundedCornerShape(14.dp))
+                        .size(52.dp)
+                        .clip(RoundedCornerShape(16.dp))
                         .background(UamWhite),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = "UAM",
                         color = UamTurquoise,
-                        style = MaterialTheme.typography.labelLarge,
+                        style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Black
                     )
                 }
                 Column {
                     Text(
-                        text = "Innovacion UAM",
+                        text = "Innovación UAM",
                         color = UamWhite,
-                        style = MaterialTheme.typography.titleLarge
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "Direccion de Innovacion y Emprendimiento",
-                        color = UamWhite.copy(alpha = 0.86f),
+                        text = "Dirección de Innovación y Emprendimiento",
+                        color = UamWhite.copy(alpha = 0.9f),
                         style = MaterialTheme.typography.bodyMedium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -258,9 +260,10 @@ private fun AppHeader() {
                 }
             }
             Text(
-                text = "Gestion unificada de participantes, roles y perfiles base para talleres, hackathones, rallies, mentorias y Programa PIA.",
-                color = UamWhite.copy(alpha = 0.92f),
-                style = MaterialTheme.typography.bodyMedium
+                text = "Gestión integral de participantes, roles y perfiles institucionales para programas de innovación.",
+                color = UamWhite.copy(alpha = 0.95f),
+                style = MaterialTheme.typography.bodyMedium,
+                lineHeight = MaterialTheme.typography.bodyMedium.lineHeight * 1.2
             )
         }
     }
@@ -268,14 +271,14 @@ private fun AppHeader() {
 
 @Composable
 private fun InnovationBottomBar(
-    selectedTab: PrototypeTab,
-    onTabSelected: (PrototypeTab) -> Unit
+    selectedTab: MainTab,
+    onTabSelected: (MainTab) -> Unit
 ) {
     NavigationBar(
         containerColor = UamWhite,
-        tonalElevation = 8.dp
+        tonalElevation = 12.dp
     ) {
-        PrototypeTab.entries.forEach { tab ->
+        MainTab.entries.forEach { tab ->
             val selected = selectedTab == tab
             NavigationBarItem(
                 selected = selected,
@@ -289,8 +292,8 @@ private fun InnovationBottomBar(
                 label = {
                     Text(
                         text = tab.label,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
                     )
                 }
             )
@@ -306,75 +309,71 @@ private fun AdminDashboardScreen(
 ) {
     ScreenSurface {
         SectionTitle(
-            title = "Panel administrativo",
-            subtitle = "Vista rapida para la Direccion antes de generar reportes anuales reales."
+            title = "Panel de Control",
+            subtitle = "Resumen ejecutivo de la gestión de usuarios y roles."
         )
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             MetricCard(
-                label = "Participantes unicos",
+                label = "Participantes",
                 value = users.size.toString(),
-                caption = "Base sin duplicidad",
+                caption = "Usuarios únicos",
                 modifier = Modifier.weight(1f)
             )
             MetricCard(
-                label = "Roles activos",
+                label = "Asignaciones",
                 value = users.sumOf { it.roles.size }.toString(),
-                caption = "Asignaciones vigentes",
+                caption = "Roles activos",
                 modifier = Modifier.weight(1f)
             )
         }
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             MetricCard(
-                label = "Perfiles listos",
+                label = "Perfiles",
                 value = users.count { it.studentProfile != null || it.adminProfile != null }.toString(),
-                caption = "Estudiante/admin",
+                caption = "Completados",
                 modifier = Modifier.weight(1f),
                 accent = UamInnovationYellow
             )
             MetricCard(
-                label = "Roles base",
+                label = "Catálogo",
                 value = roles.size.toString(),
-                caption = "Catalogo actual",
+                caption = "Roles definidos",
                 modifier = Modifier.weight(1f),
                 accent = UamGray
             )
         }
+        
         SectionCard {
             SectionTitle(
-                title = "Endpoints reflejados",
-                subtitle = "Estas interfaces corresponden al modulo backend de usuarios, roles y perfiles."
+                title = "Actividad Reciente",
+                subtitle = "Últimas acciones realizadas en la plataforma."
             )
-            EndpointPill("POST /api/usuarios")
-            EndpointPill("GET /api/usuarios")
-            EndpointPill("POST /api/usuarios/{id}/roles")
-            EndpointPill("DELETE /api/usuarios/{id}/roles/{rol}")
-            EndpointPill("POST /api/usuarios/{id}/perfiles/estudiante")
-            EndpointPill("POST /api/usuarios/{id}/perfiles/administrador")
-        }
-        SectionCard {
-            SectionTitle(
-                title = "Actividad reciente",
-                subtitle = "Simulacion local de movimientos administrativos."
-            )
-            events.take(5).forEach { event ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(10.dp)
-                            .clip(CircleShape)
-                            .background(UamInnovationYellow)
-                    )
-                    Spacer(Modifier.width(10.dp))
-                    Text(
-                        text = event,
-                        color = UamTextDark,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                events.take(5).forEachIndexed { index, event ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(8.dp)
+                                .clip(CircleShape)
+                                .background(if (index == 0) UamTurquoise else UamGray.copy(alpha = 0.5f))
+                        )
+                        Spacer(Modifier.width(12.dp))
+                        Text(
+                            text = event,
+                            color = UamTextDark,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                    if (index < 4 && index < events.size - 1) {
+                        HorizontalDivider(
+                            modifier = Modifier.padding(start = 20.dp),
+                            thickness = 0.5.dp,
+                            color = UamGray.copy(alpha = 0.1f)
+                        )
+                    }
                 }
             }
         }
@@ -398,84 +397,68 @@ private fun UsersScreen(
 
     ScreenSurface {
         SectionTitle(
-            title = "Participantes y usuarios",
-            subtitle = "Registro base para evitar duplicidad entre talleres, hackathones, rallies y mentorias."
+            title = "Registro de Participantes",
+            subtitle = "Ingrese los datos básicos para dar de alta a un nuevo miembro."
         )
         SectionCard {
-            EndpointPill("POST /api/usuarios")
-            Spacer(Modifier.height(10.dp))
-            PrototypeTextField("Nombre completo", name, { name = it })
-            PrototypeTextField("Documento", document, { document = it })
-            PrototypeTextField("Telefono", phone, { phone = it }, keyboardType = KeyboardType.Phone)
-            PrototypeTextField("Correo", email, { email = it }, keyboardType = KeyboardType.Email)
-            PrototypeTextField(
-                label = "Contrasena",
-                value = password,
-                onValueChange = { password = it },
-                keyboardType = KeyboardType.Password,
-                password = true
-            )
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                PrototypeTextField(
-                    label = "Sexo",
-                    value = sex,
-                    onValueChange = { sex = it },
-                    modifier = Modifier.weight(1f)
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                BaseTextField("Nombre completo", name, { name = it })
+                BaseTextField("Documento de identidad", document, { document = it })
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    BaseTextField("Teléfono", phone, { phone = it }, keyboardType = KeyboardType.Phone, modifier = Modifier.weight(1f))
+                    BaseTextField("Correo electrónico", email, { email = it }, keyboardType = KeyboardType.Email, modifier = Modifier.weight(1.5f))
+                }
+                BaseTextField(
+                    label = "Contraseña",
+                    value = password,
+                    onValueChange = { password = it },
+                    keyboardType = KeyboardType.Password,
+                    password = true
                 )
-                PrototypeTextField(
-                    label = "Talla",
-                    value = shirt,
-                    onValueChange = { shirt = it },
-                    modifier = Modifier.weight(1f)
-                )
-            }
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = UamTurquoise),
-                onClick = {
-                    message = when {
-                        name.isBlank() || document.isBlank() || email.isBlank() || password.length < 6 ->
-                            "Completa nombre, documento, correo y una contrasena de al menos 6 caracteres."
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    BaseTextField("Sexo", sex, { sex = it }, modifier = Modifier.weight(1f))
+                    BaseTextField("Talla de camisa", shirt, { shirt = it }, modifier = Modifier.weight(1f))
+                }
+                
+                Button(
+                    modifier = Modifier.fillMaxWidth().height(48.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = UamTurquoise),
+                    onClick = {
+                        message = when {
+                            name.isBlank() || document.isBlank() || email.isBlank() || password.length < 6 ->
+                                "Por favor, complete todos los campos obligatorios."
 
-                        users.any { it.email.equals(email.trim(), ignoreCase = true) } ->
-                            "Ya existe un usuario con ese correo."
+                            users.any { it.email.equals(email.trim(), ignoreCase = true) } ->
+                                "El correo electrónico ya se encuentra registrado."
 
-                        users.any { it.document.equals(document.trim(), ignoreCase = true) } ->
-                            "Ya existe un usuario con ese documento."
-
-                        else -> {
-                            onCreateUser(
-                                UserInput(
-                                    name = name.trim(),
-                                    document = document.trim(),
-                                    phone = phone.trim(),
-                                    email = email.trim().lowercase(),
-                                    sex = sex.trim(),
-                                    shirt = shirt.trim()
+                            else -> {
+                                onCreateUser(
+                                    UserInput(
+                                        name = name.trim(),
+                                        document = document.trim(),
+                                        phone = phone.trim(),
+                                        email = email.trim().lowercase(),
+                                        sex = sex.trim(),
+                                        shirt = shirt.trim()
+                                    )
                                 )
-                            )
-                            name = ""
-                            document = ""
-                            phone = ""
-                            email = ""
-                            password = ""
-                            sex = ""
-                            shirt = ""
-                            "Usuario registrado localmente. Listo para asignar roles."
+                                name = ""; document = ""; phone = ""; email = ""; password = ""; sex = ""; shirt = ""
+                                "Usuario registrado correctamente."
+                            }
                         }
                     }
+                ) {
+                    Text("Registrar Usuario", fontWeight = FontWeight.Bold)
                 }
-            ) {
-                Text("Registrar usuario")
-            }
-            message?.let {
-                HelperMessage(text = it)
+                
+                message?.let { StatusMessage(text = it) }
             }
         }
 
         SectionTitle(
-            title = "Usuarios registrados",
-            subtitle = "Cambio de estado equivalente a PATCH /api/usuarios/{id}/estado."
+            title = "Listado de Usuarios",
+            subtitle = "Gestión de estado y visualización de perfiles registrados."
         )
         users.forEach { user ->
             UserCard(
@@ -509,92 +492,72 @@ private fun RolesScreen(
 
     ScreenSurface {
         SectionTitle(
-            title = "Roles del sistema",
-            subtitle = "Gestiona el catalogo y las asignaciones multiples por participante."
+            title = "Configuración de Roles",
+            subtitle = "Administre el catálogo de roles disponibles en el sistema."
         )
         SectionCard {
-            EndpointPill("GET /api/roles")
-            Spacer(Modifier.height(10.dp))
-            roles.forEach { role ->
+            roles.forEachIndexed { index, role ->
                 RoleRow(role = role)
+                if (index < roles.size - 1) {
+                    HorizontalDivider(color = UamLightBackground, thickness = 1.dp, modifier = Modifier.padding(vertical = 4.dp))
+                }
             }
         }
 
         SectionCard {
-            EndpointPill("POST /api/roles")
-            Spacer(Modifier.height(10.dp))
-            PrototypeTextField("Nombre del rol", roleName, { roleName = it })
-            PrototypeTextField("Descripcion", roleDescription, { roleDescription = it })
+            SectionTitle(title = "Crear Nuevo Rol", subtitle = "Defina un nuevo perfil de acceso.")
+            BaseTextField("Nombre del rol", roleName, { roleName = it })
+            BaseTextField("Descripción", roleDescription, { roleDescription = it })
             Button(
                 modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = UamTurquoise),
                 onClick = {
                     val normalized = roleName.trim().lowercase()
-                    message = when {
-                        normalized.isBlank() -> "Escribe el nombre del rol."
-                        roles.any { it.name.equals(normalized, ignoreCase = true) } ->
-                            "Ese rol ya existe."
-
-                        else -> {
-                            onCreateRole(
-                                RoleUi(
-                                    name = normalized,
-                                    description = roleDescription.trim().ifBlank { "Rol personalizado" }
-                                )
-                            )
-                            selectedRole = normalized
-                            roleName = ""
-                            roleDescription = ""
-                            "Rol creado y disponible para asignacion."
-                        }
+                    if (normalized.isNotBlank()) {
+                        onCreateRole(RoleUi(normalized, roleDescription.trim()))
+                        roleName = ""; roleDescription = ""
+                        message = "Rol creado exitosamente."
                     }
                 }
             ) {
-                Text("Crear rol")
+                Text("Añadir al Catálogo")
             }
-            message?.let { HelperMessage(it) }
         }
 
         SectionCard {
-            SectionTitle(
-                title = "Asignar rol",
-                subtitle = "Equivale a POST /api/usuarios/{id}/roles."
-            )
-            EndpointPill("POST /api/usuarios/{id}/roles")
-            Spacer(Modifier.height(12.dp))
-            Text("Usuario", color = UamTextDark, fontWeight = FontWeight.SemiBold)
+            SectionTitle(title = "Asignación de Roles", subtitle = "Vincule usuarios con roles específicos.")
+            
+            Text("Seleccionar Usuario", style = MaterialTheme.typography.labelLarge, color = UamGray)
             SelectableChipRow(
                 items = users.map { it.id to it.name },
                 selected = selectedUserId,
                 onSelected = { selectedUserId = it }
             )
-            Spacer(Modifier.height(8.dp))
-            Text("Rol", color = UamTextDark, fontWeight = FontWeight.SemiBold)
+            
+            Text("Seleccionar Rol", style = MaterialTheme.typography.labelLarge, color = UamGray, modifier = Modifier.padding(top = 8.dp))
             SelectableTextRow(
                 items = roles.map { it.name },
                 selected = selectedRole,
                 onSelected = { selectedRole = it }
             )
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.padding(top = 8.dp)) {
                 Button(
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.buttonColors(containerColor = UamTurquoise),
                     enabled = selectedUser != null && selectedRole.isNotBlank(),
-                    onClick = {
-                        selectedUser?.let { onAssignRole(it.id, selectedRole) }
-                    }
+                    onClick = { selectedUser?.let { onAssignRole(it.id, selectedRole) } }
                 ) {
                     Text("Asignar")
                 }
                 OutlinedButton(
                     modifier = Modifier.weight(1f),
-                    border = BorderStroke(1.dp, UamGray),
+                    border = BorderStroke(1.dp, UamGray.copy(alpha = 0.5f)),
                     enabled = selectedUser?.roles?.contains(selectedRole) == true,
-                    onClick = {
-                        selectedUser?.let { onDeactivateRole(it.id, selectedRole) }
-                    }
+                    onClick = { selectedUser?.let { onDeactivateRole(it.id, selectedRole) } }
                 ) {
-                    Text("Desactivar", color = UamTextDark)
+                    Text("Remover", color = UamTextDark)
                 }
             }
         }
@@ -622,136 +585,96 @@ private fun ProfilesScreen(
 
     ScreenSurface {
         SectionTitle(
-            title = "Perfiles estudiante/admin",
-            subtitle = "Perfiles basicos relacionados con los endpoints actuales del backend."
+            title = "Perfiles Institucionales",
+            subtitle = "Complete la información específica según el rol del usuario."
         )
         SectionCard {
-            Text("Selecciona usuario", color = UamTextDark, fontWeight = FontWeight.SemiBold)
+            Text("Usuario actual", style = MaterialTheme.typography.labelLarge, color = UamGray)
             SelectableChipRow(
                 items = users.map { it.id to it.name },
                 selected = selectedUserId,
                 onSelected = { selectedUserId = it }
             )
             selectedUser?.let { user ->
-                Spacer(Modifier.height(12.dp))
-                UserCard(user = user)
+                Spacer(Modifier.height(8.dp))
+                UserCardCompact(user = user)
             }
         }
 
-        SectionCard {
-            SectionTitle(
-                title = "Perfil estudiante",
-                subtitle = "Requiere rol estudiante activo."
-            )
-            EndpointPill("POST /api/usuarios/{id}/perfiles/estudiante")
-            Spacer(Modifier.height(10.dp))
-            PrototypeTextField("CIF", cif, { cif = it })
-            PrototypeTextField("Correo institucional", institutionalEmail, { institutionalEmail = it }, KeyboardType.Email)
-            PrototypeTextField("ID carrera principal (temporal)", careerId, { careerId = it }, KeyboardType.Number)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text("Doble titulacion", color = UamTextDark)
-                Switch(checked = dualDegree, onCheckedChange = { dualDegree = it })
-            }
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                enabled = selectedUser != null && hasStudentRole && selectedUser.studentProfile == null,
-                colors = ButtonDefaults.buttonColors(containerColor = UamTurquoise),
-                onClick = {
-                    message = when {
-                        cif.isBlank() -> "El CIF es obligatorio para crear perfil estudiante."
-                        else -> {
+        if (hasStudentRole) {
+            SectionCard {
+                SectionTitle(title = "Perfil de Estudiante", subtitle = "Datos académicos obligatorios.")
+                BaseTextField("CIF", cif, { cif = it })
+                BaseTextField("Correo Institucional", institutionalEmail, { institutionalEmail = it }, KeyboardType.Email)
+                BaseTextField("Código de Carrera", careerId, { careerId = it }, KeyboardType.Number)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text("Doble Titulación", color = UamTextDark)
+                    Switch(checked = dualDegree, onCheckedChange = { dualDegree = it })
+                }
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = selectedUser != null && selectedUser.studentProfile == null,
+                    colors = ButtonDefaults.buttonColors(containerColor = UamTurquoise),
+                    onClick = {
+                        if (cif.isNotBlank()) {
                             selectedUser?.let {
-                                onCreateStudentProfile(
-                                    it.id,
-                                    StudentProfileUi(
-                                        cif = cif.trim(),
-                                        institutionalEmail = institutionalEmail.trim().ifBlank { null },
-                                        careerId = careerId.toLongOrNull(),
-                                        dualDegree = dualDegree
-                                    )
-                                )
+                                onCreateStudentProfile(it.id, StudentProfileUi(cif.trim(), institutionalEmail.trim(), careerId.toLongOrNull(), dualDegree))
                             }
-                            cif = ""
-                            institutionalEmail = ""
-                            careerId = ""
-                            dualDegree = false
-                            "Perfil estudiante creado."
+                            cif = ""; institutionalEmail = ""; careerId = ""; dualDegree = false
+                            message = "Perfil académico guardado."
                         }
                     }
+                ) {
+                    Text("Guardar Perfil Académico")
                 }
-            ) {
-                Text("Crear perfil estudiante")
-            }
-            if (!hasStudentRole) {
-                HelperMessage("Asigna primero el rol estudiante desde la pestaña Roles.")
-            }
-            selectedUser?.studentProfile?.let {
-                ProfileSummary(
-                    title = "Perfil estudiante activo",
-                    lines = listOf(
-                        "CIF: ${it.cif}",
-                        "Correo institucional: ${it.institutionalEmail ?: "Sin registrar"}",
-                        "Carrera principal: ${it.careerId ?: "Pendiente de catalogo"}"
+                selectedUser?.studentProfile?.let {
+                    ProfileSummary(
+                        title = "Información Académica Activa",
+                        lines = listOf("CIF: ${it.cif}", "Email: ${it.institutionalEmail ?: "N/A"}", "Carrera ID: ${it.careerId ?: "Pendiente"}")
                     )
-                )
+                }
             }
         }
 
-        SectionCard {
-            SectionTitle(
-                title = "Perfil administrador",
-                subtitle = "Requiere rol administrador activo."
-            )
-            EndpointPill("POST /api/usuarios/{id}/perfiles/administrador")
-            Spacer(Modifier.height(10.dp))
-            PrototypeTextField("Cargo", position, { position = it })
-            PrototypeTextField("Nivel de acceso", accessLevel, { accessLevel = it })
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                enabled = selectedUser != null && hasAdminRole && selectedUser.adminProfile == null,
-                colors = ButtonDefaults.buttonColors(containerColor = UamTurquoise),
-                onClick = {
-                    message = when {
-                        position.isBlank() || accessLevel.isBlank() ->
-                            "Cargo y nivel de acceso son obligatorios."
-
-                        else -> {
+        if (hasAdminRole) {
+            SectionCard {
+                SectionTitle(title = "Perfil Administrativo", subtitle = "Información de cargo y accesos.")
+                BaseTextField("Cargo / Posición", position, { position = it })
+                BaseTextField("Nivel de Acceso", accessLevel, { accessLevel = it })
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = selectedUser != null && selectedUser.adminProfile == null,
+                    colors = ButtonDefaults.buttonColors(containerColor = UamTurquoise),
+                    onClick = {
+                        if (position.isNotBlank()) {
                             selectedUser?.let {
-                                onCreateAdminProfile(
-                                    it.id,
-                                    AdminProfileUi(
-                                        position = position.trim(),
-                                        accessLevel = accessLevel.trim()
-                                    )
-                                )
+                                onCreateAdminProfile(it.id, AdminProfileUi(position.trim(), accessLevel.trim()))
                             }
-                            position = ""
-                            accessLevel = "total"
-                            "Perfil administrador creado."
+                            position = ""; accessLevel = "total"
+                            message = "Perfil administrativo guardado."
                         }
                     }
+                ) {
+                    Text("Guardar Perfil Administrativo")
                 }
-            ) {
-                Text("Crear perfil administrador")
-            }
-            if (!hasAdminRole) {
-                HelperMessage("Asigna primero el rol administrador desde la pestaña Roles.")
-            }
-            selectedUser?.adminProfile?.let {
-                ProfileSummary(
-                    title = "Perfil administrador activo",
-                    lines = listOf(
-                        "Cargo: ${it.position}",
-                        "Nivel de acceso: ${it.accessLevel}"
+                selectedUser?.adminProfile?.let {
+                    ProfileSummary(
+                        title = "Información Administrativa Activa",
+                        lines = listOf("Cargo: ${it.position}", "Acceso: ${it.accessLevel}")
                     )
-                )
+                }
             }
         }
-        message?.let { HelperMessage(it) }
+        
+        if (!hasStudentRole && !hasAdminRole) {
+            StatusMessage("Asigne un rol (Estudiante o Administrador) para habilitar perfiles.")
+        }
+        
+        message?.let { StatusMessage(it) }
     }
 }
 
@@ -762,7 +685,7 @@ private fun ScreenSurface(content: @Composable ColumnScope.() -> Unit) {
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         content = content
     )
 }
@@ -771,13 +694,13 @@ private fun ScreenSurface(content: @Composable ColumnScope.() -> Unit) {
 private fun SectionCard(content: @Composable ColumnScope.() -> Unit) {
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.elevatedCardColors(containerColor = UamWhite),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 3.dp)
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
             content = content
         )
     }
@@ -785,16 +708,17 @@ private fun SectionCard(content: @Composable ColumnScope.() -> Unit) {
 
 @Composable
 private fun SectionTitle(title: String, subtitle: String) {
-    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
         Text(
             text = title,
             color = UamTextDark,
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
         )
         Text(
             text = subtitle,
             color = UamGray,
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodySmall
         )
     }
 }
@@ -809,36 +733,40 @@ private fun MetricCard(
 ) {
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = UamWhite),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+        border = BorderStroke(1.dp, UamLightBackground)
     ) {
         Column(
-            modifier = Modifier.padding(14.dp),
+            modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Box(
                 modifier = Modifier
-                    .size(28.dp)
+                    .size(32.dp)
                     .clip(CircleShape)
-                    .background(accent.copy(alpha = 0.18f)),
+                    .background(accent.copy(alpha = 0.12f)),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = value.take(2),
                     color = accent,
-                    fontWeight = FontWeight.Black
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold
                 )
             }
             Text(
                 text = value,
                 color = UamTextDark,
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Black
             )
             Text(
                 text = label,
                 color = UamTextDark,
-                style = MaterialTheme.typography.labelLarge
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Medium
             )
             Text(
                 text = caption,
@@ -862,14 +790,15 @@ private fun UserCard(
         ) {
             Box(
                 modifier = Modifier
-                    .size(46.dp)
+                    .size(48.dp)
                     .clip(CircleShape)
-                    .background(UamTurquoise.copy(alpha = 0.14f)),
+                    .background(UamTurquoise.copy(alpha = 0.1f)),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = user.initials(),
                     color = UamTurquoise,
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -877,7 +806,8 @@ private fun UserCard(
                 Text(
                     text = user.name,
                     color = UamTextDark,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -888,11 +818,6 @@ private fun UserCard(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Text(
-                    text = "Doc. ${user.document}",
-                    color = UamGray,
-                    style = MaterialTheme.typography.bodySmall
-                )
             }
             StatusBadge(user.status)
         }
@@ -902,19 +827,41 @@ private fun UserCard(
 }
 
 @Composable
-private fun RoleRow(role: RoleUi) {
+private fun UserCardCompact(user: UserUi) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .clip(RoundedCornerShape(8.dp))
+            .background(UamLightBackground)
+            .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Box(
             modifier = Modifier
-                .size(34.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .background(UamTurquoise.copy(alpha = 0.14f)),
+                .size(32.dp)
+                .clip(CircleShape)
+                .background(UamTurquoise),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(user.initials(), color = UamWhite, style = MaterialTheme.typography.labelSmall)
+        }
+        Text(user.name, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+    }
+}
+
+@Composable
+private fun RoleRow(role: RoleUi) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(36.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(UamTurquoise.copy(alpha = 0.08f)),
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -924,7 +871,7 @@ private fun RoleRow(role: RoleUi) {
             )
         }
         Column(modifier = Modifier.weight(1f)) {
-            Text(role.name, color = UamTextDark, fontWeight = FontWeight.SemiBold)
+            Text(role.name.replaceFirstChar { it.uppercase() }, color = UamTextDark, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium)
             Text(role.description, color = UamGray, style = MaterialTheme.typography.bodySmall)
         }
     }
@@ -933,13 +880,11 @@ private fun RoleRow(role: RoleUi) {
 @Composable
 private fun RoleBadges(roles: Set<String>) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .horizontalScroll(rememberScrollState()),
+        modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         if (roles.isEmpty()) {
-            TagPill("sin rol", UamGray)
+            TagPill("Sin roles asignados", UamGray)
         } else {
             roles.sorted().forEach { role ->
                 TagPill(role, if (role == "administrador") UamInnovationYellow else UamTurquoise)
@@ -952,27 +897,15 @@ private fun RoleBadges(roles: Set<String>) {
 private fun TagPill(text: String, color: Color) {
     Box(
         modifier = Modifier
-            .clip(RoundedCornerShape(8.dp))
-            .background(color.copy(alpha = 0.16f))
-            .padding(horizontal = 10.dp, vertical = 6.dp)
-    ) {
-        Text(text = text, color = if (color == UamInnovationYellow) UamTextDark else color, style = MaterialTheme.typography.bodySmall)
-    }
-}
-
-@Composable
-private fun EndpointPill(text: String) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
-            .background(UamLightBackground)
-            .padding(horizontal = 12.dp, vertical = 8.dp)
+            .clip(RoundedCornerShape(6.dp))
+            .background(color.copy(alpha = 0.12f))
+            .padding(horizontal = 10.dp, vertical = 4.dp)
     ) {
         Text(
-            text = text,
-            color = UamTurquoise,
-            style = MaterialTheme.typography.labelLarge
+            text = text, 
+            color = if (color == UamInnovationYellow) UamTextDark else color, 
+            style = MaterialTheme.typography.labelSmall,
+            fontWeight = FontWeight.Bold
         )
     }
 }
@@ -984,7 +917,7 @@ private fun StatusBadge(status: String) {
         "suspendido" -> UamInnovationYellow
         else -> UamGray
     }
-    TagPill(text = status, color = color)
+    TagPill(text = status.uppercase(), color = color)
 }
 
 @Composable
@@ -1006,9 +939,7 @@ private fun SelectableChipRow(
     onSelected: (Int) -> Unit
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .horizontalScroll(rememberScrollState()),
+        modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items.forEach { item ->
@@ -1028,9 +959,7 @@ private fun SelectableTextRow(
     onSelected: (String) -> Unit
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .horizontalScroll(rememberScrollState()),
+        modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items.forEach { item ->
@@ -1053,17 +982,17 @@ private fun SelectablePill(
     val foreground = if (selected) UamWhite else UamTextDark
     OutlinedButton(
         onClick = onClick,
-        shape = RoundedCornerShape(8.dp),
-        border = BorderStroke(1.dp, if (selected) UamTurquoise else UamLightBackground),
+        shape = RoundedCornerShape(10.dp),
+        border = BorderStroke(1.5.dp, if (selected) UamTurquoise else UamLightBackground),
         colors = ButtonDefaults.outlinedButtonColors(containerColor = background),
-        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
     ) {
-        Text(text = text, color = foreground, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text(text = text, color = foreground, style = MaterialTheme.typography.labelLarge)
     }
 }
 
 @Composable
-private fun PrototypeTextField(
+private fun BaseTextField(
     label: String,
     value: String,
     onValueChange: (String) -> Unit,
@@ -1077,23 +1006,25 @@ private fun PrototypeTextField(
         onValueChange = onValueChange,
         label = { Text(label) },
         singleLine = true,
+        textStyle = MaterialTheme.typography.bodyMedium,
         visualTransformation = if (password) PasswordVisualTransformation() else androidx.compose.ui.text.input.VisualTransformation.None,
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(10.dp)
     )
 }
 
 @Composable
-private fun HelperMessage(text: String) {
+private fun StatusMessage(text: String) {
     Text(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
-            .background(UamInnovationYellow.copy(alpha = 0.20f))
-            .padding(10.dp),
+            .clip(RoundedCornerShape(10.dp))
+            .background(UamInnovationYellow.copy(alpha = 0.15f))
+            .padding(12.dp),
         text = text,
         color = UamTextDark,
-        style = MaterialTheme.typography.bodySmall
+        style = MaterialTheme.typography.bodySmall,
+        fontWeight = FontWeight.Medium
     )
 }
 
@@ -1102,12 +1033,12 @@ private fun ProfileSummary(title: String, lines: List<String>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(10.dp))
             .background(UamLightBackground)
-            .padding(12.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+            .padding(14.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        Text(title, color = UamTextDark, fontWeight = FontWeight.SemiBold)
+        Text(title, color = UamTextDark, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
         lines.forEach { line ->
             Text(line, color = UamGray, style = MaterialTheme.typography.bodySmall)
         }
@@ -1118,15 +1049,15 @@ private fun ProfileSummary(title: String, lines: List<String>) {
 private fun NavGlyph(text: String, selected: Boolean) {
     Box(
         modifier = Modifier
-            .size(28.dp)
+            .size(32.dp)
             .clip(CircleShape)
-            .background(if (selected) UamTurquoise else UamLightBackground),
+            .background(if (selected) UamTurquoise else UamLightBackground.copy(alpha = 0.5f)),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = text,
             color = if (selected) UamWhite else UamGray,
-            fontWeight = FontWeight.Bold,
+            fontWeight = FontWeight.Black,
             style = MaterialTheme.typography.labelLarge
         )
     }
@@ -1148,14 +1079,14 @@ private fun UserUi.initials(): String {
         .ifBlank { "IU" }
 }
 
-private enum class PrototypeTab(
+private enum class MainTab(
     val label: String,
     val glyph: String
 ) {
-    Panel("Panel", "P"),
+    Panel("Dashboard", "D"),
     Usuarios("Usuarios", "U"),
     Roles("Roles", "R"),
-    Perfiles("Perfiles", "F")
+    Perfiles("Perfiles", "P")
 }
 
 private data class RoleUi(
