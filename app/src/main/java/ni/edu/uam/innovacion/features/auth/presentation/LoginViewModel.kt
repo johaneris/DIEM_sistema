@@ -14,8 +14,10 @@ import ni.edu.uam.innovacion.data.repository.AuthRepository
 
 data class LoginUiState(
     val isLoading: Boolean = false,
+    val isLoggingOut: Boolean = false,
     val user: AuthenticatedUserResponse? = null,
     val errorMessage: String? = null,
+    val logoutError: String? = null,
     val sessionChecked: Boolean = false
 )
 
@@ -98,10 +100,31 @@ class LoginViewModel(
     }
 
     fun logout() {
+        _uiState.update { it.copy(isLoggingOut = true, logoutError = null) }
         viewModelScope.launch {
-            authRepository.logout()
-            _uiState.update { LoginUiState(sessionChecked = true) }
+            when (val result = authRepository.logout()) {
+                is ApiResult.Success, is ApiResult.SessionExpired -> {
+                    _uiState.update { LoginUiState(sessionChecked = true) }
+                }
+
+                else -> {
+                    _uiState.update {
+                        it.copy(
+                            isLoggingOut = false,
+                            logoutError = result.readableMessage()
+                        )
+                    }
+                }
+            }
         }
+    }
+
+    fun clearLogoutError() {
+        _uiState.update { it.copy(logoutError = null) }
+    }
+
+    fun markSessionExpired() {
+        _uiState.update { LoginUiState(sessionChecked = true) }
     }
 
     companion object {

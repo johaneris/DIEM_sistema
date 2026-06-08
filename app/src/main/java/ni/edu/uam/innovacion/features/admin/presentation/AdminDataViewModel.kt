@@ -42,10 +42,12 @@ data class AdminDataUiState(
     val errorMessage: String? = null,
     val sessionExpired: Boolean = false
 ) {
-    val participantesUnicos: Int = usuarios.size
-    val actividadesRealizadas: Int = actividades.count { it.estado == "finalizada" }
-    val puntosOtorgables: Int = actividades.sumOf { it.puntosBase }
-    val issues: Int = listOfNotNull(errorMessage).size
+    val usuariosRegistrados: Int = usuarios.size
+    val usuariosActivos: Int = usuarios.count { it.estado.equals("activo", ignoreCase = true) }
+    val actividadesTotales: Int = actividades.size
+    val actividadesFinalizadas: Int =
+        actividades.count { it.estado.equals("finalizada", ignoreCase = true) }
+    val puntosBaseConfigurados: Int = actividades.sumOf { it.puntosBase }
 }
 
 class AdminDataViewModel(

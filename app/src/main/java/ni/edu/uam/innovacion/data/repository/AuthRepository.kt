@@ -50,8 +50,17 @@ class AuthRepository(
 
     suspend fun hasSavedToken(): Boolean = !tokenStore.getAccessToken().isNullOrBlank()
 
-    suspend fun logout() {
-        tokenStore.clear()
+    suspend fun logout(): ApiResult<Unit> {
+        val result = safeApiCall(tokenStore) { api.logout() }
+        when (result) {
+            is ApiResult.Success,
+            is ApiResult.SessionExpired -> tokenStore.clear()
+
+            is ApiResult.HttpError,
+            is ApiResult.NetworkError,
+            is ApiResult.UnknownError -> Unit
+        }
+        return result
     }
 
     private companion object {

@@ -4,6 +4,7 @@ import ni.edu.uam.innovacion.core.network.ApiResult
 import ni.edu.uam.innovacion.core.network.safeApiCall
 import ni.edu.uam.innovacion.core.session.AuthTokenStore
 import ni.edu.uam.innovacion.data.remote.user.ActualizarUsuarioRequest
+import ni.edu.uam.innovacion.data.remote.user.AsignarRolRequest
 import ni.edu.uam.innovacion.data.remote.user.CambiarContrasenaRequest
 import ni.edu.uam.innovacion.data.remote.user.CrearUsuarioRequest
 import ni.edu.uam.innovacion.data.remote.user.DobleTitulacionRequest
@@ -25,6 +26,9 @@ class UsuariosRepository(
     private val api: UsuariosApiService,
     private val tokenStore: AuthTokenStore
 ) {
+    suspend fun asignarRol(idUsuario: Long, nombreRol: String): ApiResult<UsuarioResponse> =
+        safeApiCall(tokenStore) { api.asignarRol(idUsuario, AsignarRolRequest(nombreRol)) }
+
     suspend fun listarUsuarios(): ApiResult<List<UsuarioResponse>> =
         safeApiCall(tokenStore) { api.listarUsuarios() }
 

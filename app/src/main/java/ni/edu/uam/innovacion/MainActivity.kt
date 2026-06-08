@@ -4,12 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import ni.edu.uam.innovacion.features.auth.presentation.LoginRoute
-import ni.edu.uam.innovacion.features.user.presentation.screen.InnovacionUamPrototypeScreen
 import ni.edu.uam.innovacion.ui.theme.Sistema_Innovacion_FrontendTheme
 
 class MainActivity : ComponentActivity() {
@@ -18,15 +12,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             Sistema_Innovacion_FrontendTheme {
-                var authenticated by rememberSaveable { mutableStateOf(false) }
-
-                if (authenticated) {
-                    InnovacionUamPrototypeScreen()
-                } else {
-                    LoginRoute(
-                        onAuthenticated = { authenticated = true }
-                    )
-                }
+                AppRoot()
             }
         }
     }

@@ -10,6 +10,12 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface UsuariosApiService {
+    @POST("admin/usuarios/{idUsuario}/roles")
+    suspend fun asignarRol(
+        @Path("idUsuario") idUsuario: Long,
+        @Body request: AsignarRolRequest
+    ): Response<UsuarioResponse>
+
     @GET("usuarios")
     suspend fun listarUsuarios(): Response<List<UsuarioResponse>>
 

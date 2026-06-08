@@ -25,6 +25,10 @@ data class CambiarContrasenaRequest(
     val contrasena: String
 )
 
+data class AsignarRolRequest(
+    val nombreRol: String
+)
+
 data class UsuarioResponse(
     val idUsuario: Long,
     val nombreCompleto: String,

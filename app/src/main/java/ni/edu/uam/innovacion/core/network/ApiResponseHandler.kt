@@ -21,7 +21,7 @@ suspend fun <T> safeApiCall(
             }
         } else {
             val error = parseErrorResponse(response)
-            if (response.code() == 401) {
+            if (response.code() == 401 && tokenStore != null) {
                 tokenStore?.clear()
                 ApiResult.SessionExpired(error?.message ?: "Sesion expirada. Inicie sesion nuevamente.")
             } else {

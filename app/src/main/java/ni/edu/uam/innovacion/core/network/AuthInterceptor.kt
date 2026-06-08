@@ -11,6 +11,7 @@ class AuthInterceptor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val original = chain.request()
         val token = runBlocking { tokenStore.getAccessToken() }
+        val isLoginRequest = original.url.encodedPath.endsWith("/auth/login")
 
         val requestBuilder = original.newBuilder()
             .header("Accept", "application/json")
@@ -19,7 +20,7 @@ class AuthInterceptor(
             requestBuilder.header("Content-Type", "application/json")
         }
 
-        if (!token.isNullOrBlank() && original.header("Authorization").isNullOrBlank()) {
+        if (!isLoginRequest && !token.isNullOrBlank() && original.header("Authorization").isNullOrBlank()) {
             requestBuilder.header("Authorization", "Bearer $token")
         }
 
