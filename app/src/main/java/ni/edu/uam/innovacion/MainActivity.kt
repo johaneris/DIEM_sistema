@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import ni.edu.uam.innovacion.ui.theme.Sistema_Innovacion_FrontendTheme
+import ni.edu.uam.innovacion.features.dashboard.presentation.screen.MainAdminLayout
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
