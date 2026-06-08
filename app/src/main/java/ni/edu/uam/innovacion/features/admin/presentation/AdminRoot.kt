@@ -340,7 +340,7 @@ private fun AdminDrawerContent(
     onNavigate: (AdminDestination) -> Unit,
     onLogout: () -> Unit
 ) {
-    var profilesExpanded by rememberSaveable { mutableStateOf(true) }
+    var profilesExpanded by rememberSaveable { mutableStateOf(false) }
     var catalogsExpanded by rememberSaveable { mutableStateOf(false) }
     Column(modifier = Modifier.fillMaxSize()) {
         DrawerHeader(currentUser)
